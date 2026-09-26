@@ -1,0 +1,11 @@
+# lite profile, 5 AMBE frames (100 ms) of lookahead, on the D-STAR seed shards.
+name = "seed-dstar-lite-ll5"
+
+[model]
+profile = "lite"
+lookahead = 5
+
+[data]
+source = "shards"
+shards = "seed-dstar"
+mode = "dstar"

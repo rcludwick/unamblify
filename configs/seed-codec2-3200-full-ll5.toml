@@ -1,0 +1,15 @@
+# full profile, 5 frames (100 ms) of lookahead, on the Codec 2 3200 (M17
+# voice) seed shards: `unamblify shard --mode codec2-3200 --name seed-codec2-3200`.
+name = "seed-codec2-3200-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+
+[data]
+source = "shards"
+shards = "seed-codec2-3200"
+mode = "codec2-3200"
+
+[train]
+device = "mps"

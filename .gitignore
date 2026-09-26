@@ -1,0 +1,41 @@
+# Per-item worktrees (see CLAUDE.md) and subagent scratch worktrees.
+.worktrees/
+.claude/worktrees/
+
+# Rust
+target/
+
+# Zensical build output (site_dir in zensical.toml).
+docs/.site/
+
+# "Memories" — hard-fought findings written during sessions. Kept local for
+# now: docs/notes/index.md is tracked (it explains the section), the notes
+# themselves are not. Flip this when the project is ready to publish them.
+docs/notes/*
+!docs/notes/index.md
+
+# Superpowers working material (specs/plans) — internal, not published.
+docs/superpowers/
+
+# Training data never lives in the repo; it lives on the 8 TB drive
+# (UNAMBLIFY_DATA). Convenience symlinks are ignored.
+training_data
+data/local/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# libtorch environment (scripts/train-env.sh): the uv venv with torch==2.13.0
+# and the machine-specific cargo config it generates (see
+# .cargo/config.toml.example).
+.venv-torch/
+# scripts/mos.py's venv (torch + torchaudio, unpinned)
+.venv-mos/
+.cargo/config.toml
+.playwright-mcp/
+# Per-worktree CARGO_TARGET_DIRs (see CLAUDE.md: use one per worktree).
+/target-*/
+__pycache__/

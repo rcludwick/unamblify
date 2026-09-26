@@ -1,0 +1,24 @@
+[package]
+name = "ham-digital-modes-dstar"
+description = "D-STAR AMBE vocoder, a reduced vendored subset of ham_digital_modes"
+# NOTE: hard-coded, not inherited. This is a vendored LGPL-3.0-or-later island
+# inside an AGPL-3.0-only workspace; `license.workspace = true` would silently
+# relicense someone else's terms. See VENDORED.md.
+version = "0.1.0"
+edition = "2021"
+license = "LGPL-3.0-or-later"
+repository = "https://github.com/BrucePerens/hams_open"
+
+[dependencies]
+
+# NOTE: `vendor/ambe-thumbdv` deliberately carries no `[lints]` section,
+# and this crate would rather not either. It needs one: `just clippy` runs
+# `-D warnings` over the whole compilation, and this crate is compiled as a
+# dependency of unamblify-data, so `--exclude` cannot spare it. Upstream's
+# code trips two default-level lints. Silencing them here, in our own
+# manifest, leaves every vendored source file byte-for-byte upstream;
+# editing the sources to satisfy our settings would break re-derivation
+# against the pinned revision. Only lints upstream actually trips are
+# listed, so a future re-vendor that trips a new one fails loudly.
+[lints.clippy]
+needless_range_loop = "allow"

@@ -1,0 +1,15 @@
+# The generalist: one full-profile model over every vocoder mode at once,
+# told which one it hears (mode_embed). 5 AMBE frames (100 ms) of
+# lookahead, on the balanced mixed-4mode shard set. The per-mode
+# specialists resume from this run's best checkpoint.
+name = "generalist-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "mixed-4mode"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]

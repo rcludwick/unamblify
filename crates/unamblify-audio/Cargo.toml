@@ -1,0 +1,25 @@
+[package]
+name = "unamblify-audio"
+description = "Audio I/O, resampling, loudness, STFT/mel and metrics for the unamblify pipeline."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+unamblify = { path = "../unamblify" }
+hound = "3.5"
+rubato = "0.16"
+rustfft = "6"
+serde = { version = "1", features = ["derive"] }
+symphonia = { version = "0.5", default-features = false, features = ["flac", "mp3"] }
+thiserror = "2"
+flacenc = "0.5.1"
+
+[dev-dependencies]
+serde_json = "1"
+
+[lints]
+workspace = true

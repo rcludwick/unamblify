@@ -1,0 +1,76 @@
+# Run config (spec §7). Every key has this default; `name` is required.
+# unamblify train --config configs/default.toml
+name = "default"
+
+[model]
+profile = "full"      # full | lite | super-lite
+lookahead = 5         # AMBE 20 ms frames: 5 = ll5 (100 ms), 20 = ll20 (400 ms)
+mode_embed = false    # true: a learned 16-wide embedding per mode of [data] modes,
+                      # concatenated to the features at every frame (one model,
+                      # told which vocoder it hears); false: blind to the mode
+noise_head = false    # the aperiodic excitation path: shaped noise at a learned
+                      # share of the local level, the only path that can fill the
+                      # troughs between harmonics (the residual robotic quality)
+noise_mod = false     # with noise_head: modulate the noise by the periodic path's
+                      # envelope (learned depth) and give it a gain per 1 ms
+                      # sub-frame, so it can be breath rather than hiss and can
+                      # form a plosive burst shorter than the 10 ms hop
+
+erasure_in = false    # true: a per-frame 0/1 lost-frame mask joins the features beside the
+                      # mode embedding; needs a shard set built from a drops sibling to
+                      # teach anything. Changes the tensor shapes (one more channel
+                      # into the context conv, so a gap is seen a lookahead early).
+
+[data]
+source = "shards"     # pipeline | shards
+shards = "seed-dstar" # shard set name under $UNAMBLIFY_DATA/shards/ (shards only)
+mode = "dstar"        # dstar | ysf-dmr | codec2-3200 | codec2-1600 — one mode, or:
+# modes = ["dstar", "codec2-3200"]   # several, in the model's mode-index order: the
+                      # pipeline source joins each mode's capture, the shards source
+                      # needs each in the set (a subset of its modes is fine), the eval
+                      # clips load per mode and score per mode (eval/lsd@dstar …)
+# mode_weights = [0.3, 0.15, 0.275, 0.275]   # share of the batches per mode of `modes`,
+                      # same order; empty = a shard set's own proportions (84 % Codec 2
+                      # in mixed-large) or round-robin from the pipeline source
+crop_s = 2.0
+kinds = ["base"]      # capture sets of the mode: base, drops, ber (captured/<mode>+<kind>/)
+
+[train]
+steps = 20000
+batch = 16
+lr = 2e-4
+seed = 1
+device = "cpu"        # cpu | mps | cuda:0 | rocm:0
+onset_w = 2.0
+tail_w = 3.0
+gan = false
+amp = false
+periodicity_w = 0.0   # cepstral periodicity term: a gameable proxy, diagnostic only
+hnr_w = 0.0           # harmonic-to-trough term, dB: 0.1 is ~10 % of the total; needs
+                      # [model] noise_head (docs/metrics/loss-terms.md)
+transient_w = 0.0     # 1 ms high-band envelope + slope term, dB: keeps stop
+                      # consonants' bursts and closures; 0.03 is ~10 % of the total
+# init_from = "20260912-000009-generalist-full-ll5"   # start from another run's
+                      # weights: a run id (its best checkpoint), <run-id>:<step>, or a
+                      # checkpoints/step-N path. A new run — step 0, fresh optimiser,
+                      # its own metrics — that inherits only the weights. A specialist
+                      # listing fewer [data] modes than the checkpoint takes the
+                      # parent's mode-embedding row for each mode it keeps. Ignored
+                      # when resuming.
+
+[ckpt]
+every_steps = 500
+keep = 5
+
+[eval]
+every_steps = 500
+clips = "configs/eval-clips.txt"
+max_items = 64
+
+[augment]
+rx_share = 0.3        # share of examples that get receive-side noise on deg8 (0 = off)
+hum = true            # mains / PSU hum
+broadband = true      # white or pink noise at 15–35 dB SNR
+whine = true          # alternator whine
+colouring = true      # tilt or notch, sometimes soft clipping
+squelch = true    # squelch tail: a decaying noise burst at the end of the clip

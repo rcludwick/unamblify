@@ -1,0 +1,50 @@
+# The 200 k set: the YSF/DMR-weighted mix at twice the draw of v3.
+#
+#   shards mixed-50k-v4   4 modes, 50 k utterances drawn per capture set,
+#                         so 200 k drawn in total. Built after the drive
+#                         was relocated and the whole chip capture was
+#                         backed up to Drive, so nothing here is at risk
+#                         of a repack.
+#   [data] mode_weights   unchanged from v3: ysf-dmr 0.40, dstar 0.30,
+#                         the two Codec 2 modes 0.15 each. The mix is
+#                         batch composition, not how many utterances were
+#                         packed, so it can be retuned without rebuilding.
+#   [train] steps         held at 40 000, the same as v3. The set is twice
+#                         the size, so the model sees the same number of
+#                         examples drawn from twice the variety rather
+#                         than a longer run. Raise it if the curves are
+#                         still falling at the end.
+#
+# YSF/DMR is weighted highest because it is the mode the vocoder damages
+# most. Judge on eval/hnr_abs, eval/plosive_* and scripts/mos.py, not on
+# eval/lsd, and note LSD is not comparable with earlier runs: the training
+# set changed again.
+
+name = "mixed-50k-v4-ysf-heavy-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+noise_head = true
+noise_mod = true
+
+[data]
+source = "shards"
+shards = "mixed-50k-v4"
+# Index order must match how the shard set was built
+# (--modes ysf-dmr,dstar,codec2-3200,codec2-1600).
+modes = ["ysf-dmr", "dstar", "codec2-3200", "codec2-1600"]
+# The requested 40/30/15/15 mix, as batch composition.
+mode_weights = [0.40, 0.30, 0.15, 0.15]
+
+[train]
+steps = 40000
+# Pinned, not inherited: configs/default.toml says cpu, and an earlier
+# run only reached MPS through a per-run override.
+device = "mps"
+periodicity_w = 0.0
+# ~10 % of the total each at the start; read loss/hnr_l1 and
+# loss/transient against loss/total in the first few hundred steps.
+hnr_w = 0.1
+transient_w = 0.03

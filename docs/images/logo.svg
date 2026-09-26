@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- unamblify mark: a staircase "robotic" waveform on the left dissolving into
+       a smooth sine on the right, one rainbow wash across both (same stops as
+       astar's brand rainbow so the two sites' header hairlines match). -->
+  <defs>
+    <linearGradient id="rainbow" gradientUnits="userSpaceOnUse" x1="80" y1="512" x2="944" y2="512">
+      <stop offset="0.00" stop-color="#FF1A33"/>
+      <stop offset="0.17" stop-color="#FF8000"/>
+      <stop offset="0.34" stop-color="#FFE000"/>
+      <stop offset="0.51" stop-color="#14E04A"/>
+      <stop offset="0.68" stop-color="#00B4FF"/>
+      <stop offset="0.84" stop-color="#5B4BFF"/>
+      <stop offset="1.00" stop-color="#C03BFF"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#rainbow)" stroke-width="72" stroke-linecap="round" stroke-linejoin="round">
+    <!-- quantised staircase -->
+    <path d="M80 512 H170 V330 H260 V690 H350 V420 H440 V600 H500"/>
+    <!-- smooth sine -->
+    <path d="M500 600 C 560 600, 590 300, 660 300 S 760 720, 830 720 S 920 512, 944 512"/>
+  </g>
+</svg>

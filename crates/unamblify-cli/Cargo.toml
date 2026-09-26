@@ -1,0 +1,42 @@
+[package]
+name = "unamblify-cli"
+description = "The `unamblify` binary: prepare, capture, shard, verify, train, infer, serve, runs, stats, smoke."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "unamblify"
+path = "src/main.rs"
+
+[features]
+default = ["train"]
+# `train`, `infer` and `smoke` link libtorch through unamblify-train. Build with
+# `--no-default-features` for a libtorch-free binary that still has
+# prepare / capture / shard / verify / serve / runs / stats.
+train = ["dep:unamblify-train"]
+# GPU metric samplers, forwarded to the train crate.
+cuda = ["train", "unamblify-train/cuda"]
+rocm = ["train", "unamblify-train/rocm"]
+
+[dependencies]
+unamblify = { path = "../unamblify" }
+unamblify-data = { path = "../unamblify-data" }
+unamblify-audio = { path = "../unamblify-audio" }
+unamblify-web = { path = "../unamblify-web" }
+unamblify-train = { path = "../unamblify-train", optional = true }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+env_logger = "0.11"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+nix = { version = "0.31", features = ["signal"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread"] }
+toml = "0.9"
+
+[lints]
+workspace = true

@@ -1,0 +1,19 @@
+# The capacity probe upward: the full profile 1.75x wide — 6.4 M
+# parameters against 2.1 M, still 130x real time on one M-series core
+# (unamblify bench, 2026-09-12) — on the same large mixed set as
+# generalist-large-full-ll5, so the only thing that differs is size.
+name = "generalist-large-full-w175-ll5"
+
+[model]
+profile = "full"
+width = 1.75
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "mixed-large"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]
+
+[train]
+steps = 40000

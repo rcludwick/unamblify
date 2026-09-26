@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>unamblify</title>
+  <link rel="stylesheet" href="ui/uplot.min.css">
+  <link rel="stylesheet" href="ui/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#/runs">unamblify <small>training</small></a>
+      <nav class="tabs" id="nav">
+        <a href="#/runs" data-page="runs">Runs</a>
+        <a href="#/new" data-page="new">New run</a>
+        <a href="#/capture" data-page="capture">Capture</a>
+        <a href="#/samples" data-page="samples">Samples</a>
+        <a href="#/compare" data-page="compare">Compare</a>
+        <a href="#/host" data-page="host">Host</a>
+      </nav>
+      <div class="conn" id="conn"><span class="dot"></span><span>connecting</span></div>
+    </div>
+  </header>
+  <main id="app"><div class="empty">Loading…</div></main>
+  <div id="toasts"></div>
+  <script src="ui/uplot.iife.min.js"></script>
+  <script src="ui/app.js"></script>
+</body>
+</html>

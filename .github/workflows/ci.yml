@@ -1,0 +1,55 @@
+name: ci
+
+# Runs on GitHub-hosted runners for now. The self-hosted IONOS fleet
+# (rcludwick/gh-runners) registers per repository; once a runner is registered
+# for this repo, switch `runs-on` to `[self-hosted, linux, x64]`, drop the
+# uv install step (uv is baked into the runner image), and bake libudev-dev
+# into the runner image instead of the apt-get step below — the rootless
+# podman runners have no sudo.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  # No RUSTFLAGS here on purpose: an exported RUSTFLAGS replaces the
+  # per-target rustflags in the generated .cargo/config.toml (the libtorch
+  # rpath) and test binaries then fail to load libtorch. Warnings are
+  # denied by the clippy step instead.
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # serialport (via the vendored ambe-thumbdv driver) links libudev on
+      # Linux. GitHub-hosted runner: apt is fine here; on the IONOS runners
+      # it must be in the image (see the comment at the top).
+      - run: sudo apt-get update && sudo apt-get install -y libudev-dev pkg-config smartmontools
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: scripts/train-env.sh
+      # libtorch 2.13.0 (CPU wheel) for the train crate; writes the
+      # gitignored .cargo/config.toml with LIBTORCH and the rpath so every
+      # cargo step below just works. uv caches the wheel between runs.
+      - run: scripts/train-env.sh --gpu cpu
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      # The CI smoke run: 20 CPU steps on synthetic data through the binary.
+      - run: cargo run --locked -p unamblify-cli -- smoke
+      # The libtorch-free binary must keep building on its own.
+      - run: cargo build --locked --no-default-features -p unamblify-cli
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: ./ci/build-docs.sh

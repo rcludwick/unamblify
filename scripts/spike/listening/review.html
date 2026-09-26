@@ -1,0 +1,51 @@
+<!doctype html><meta charset="utf-8"><title>unamblify — review my ratings</title>
+<style>
+:root{color-scheme:dark}body{font:14px/1.45 system-ui;background:#101014;color:#ddd;margin:0;padding:24px 16px;max-width:1180px;margin-inline:auto}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;margin:26px 0 8px;color:#b9b9c6}.muted{color:#8a8a96}a{color:#6ea8ff}
+.utt{background:#191920;border:1px solid #2a2a35;border-radius:10px;padding:14px 16px;margin:12px 0}.utt.flag{border-color:#e0a030;box-shadow:0 0 0 1px #e0a03055}
+.head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}.key{font:12px ui-monospace,monospace;color:#9a9aa8}.tag{font-size:12px;padding:1px 8px;border-radius:10px;background:#2a2a35}
+.tag.M{background:#1d3a5f}.tag.F{background:#5f1d44}.why{color:#e0a030;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.cell b{display:block;font-size:12px;color:#b9b9c6;margin-bottom:4px}audio{width:100%;height:34px}
+.sc{display:flex;gap:4px;margin-top:6px;align-items:center}.sc button{font:inherit;width:30px;height:28px;border-radius:6px;border:1px solid #3a3a48;background:#23232d;color:#ccc;cursor:pointer;padding:0}
+.sc button.on{background:#2f6fed;border-color:#2f6fed;color:#fff}.sc button.was{outline:1px dashed #e0a030}.sc span{margin-left:6px;font-size:12px;color:#8a8a96}
+button.mode{font:inherit;background:#23232d;color:#eee;border:1px solid #3a3a48;border-radius:8px;padding:6px 12px;cursor:pointer}button.mode.on{background:#2f6fed;border-color:#2f6fed}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+<h1>Review my ratings</h1>
+<div class="muted">Unblinded: every sentence with all four systems side by side, the score you gave, and the predictor's. Click a number to change a score — it saves at once and the latest one counts; a dashed outline marks what you gave originally. <a href="/">Back to the blind test</a></div>
+<p><span id="modes"></span> &nbsp; <span class="muted" id="count"></span></p>
+<div id="out"></div>
+<script>
+const SYS=[["clean","clean recording"],["codec","raw codec (chip)"],["filter","old filter model (v6 @72k)"],["restorer","restorer + synthesiser"]];
+let clips=[],ratings={},first={},mode="dstar";
+async function load(){clips=await(await fetch("clips.json")).json();for(const r of await(await fetch("/api/ratings")).json()){if(!(r.id in first))first[r.id]=r.score;ratings[r.id]=r.score}modes();draw()}
+function modes(){const el=document.getElementById("modes");el.innerHTML="";for(const[m,l]of[["dstar","D-STAR"],["ysf-dmr","YSF/DMR"]]){const b=document.createElement("button");b.className="mode"+(m===mode?" on":"");b.textContent=l;b.onclick=()=>{mode=m;modes();draw()};el.append(b," ")}}
+function flags(u){ // why a sentence deserves a second listen
+  const s=k=>ratings[u[k]?.id],why=[];
+  if(s("restorer")!=null&&s("restorer")<=3)why.push(`you gave the restorer ${s("restorer")} here, against 4–5 on almost every other sentence`);
+  if(s("clean")!=null&&s("clean")<=3)why.push(`you gave the CLEAN recording only ${s("clean")} — the source itself may be poor`);
+  if(s("filter")!=null&&s("codec")!=null&&s("filter")<s("codec"))why.push(`you rated the old filter (${s("filter")}) below the raw codec (${s("codec")})`);
+  if(s("restorer")!=null&&s("clean")!=null&&s("restorer")>s("clean"))why.push(`you rated the restorer (${s("restorer")}) above the clean recording (${s("clean")})`);
+  return why}
+function draw(){
+  const by={};for(const c of clips.filter(c=>c.mode===mode))(by[c.key]??={gender:c.gender,corpus:c.corpus,speaker:c.speaker,key:c.key})[c.system]=c;
+  const utts=Object.values(by),rated=clips.filter(c=>c.mode===mode&&c.id in ratings).length;
+  document.getElementById("count").textContent=`${rated} of ${clips.filter(c=>c.mode===mode).length} clips rated in this mode`;
+  const out=document.getElementById("out");out.innerHTML="";
+  const flagged=utts.filter(u=>flags(u).length),rest=utts.filter(u=>!flags(u).length).sort((a,b)=>a.gender.localeCompare(b.gender)||a.key.localeCompare(b.key));
+  const section=(title,list)=>{if(!list.length)return;const h=document.createElement("h2");h.textContent=title;out.append(h);for(const u of list)out.append(card(u))};
+  section(`Worth a second listen (${flagged.length})`,flagged);section("Female",rest.filter(u=>u.gender==="F"));section("Male",rest.filter(u=>u.gender==="M"));
+  if(!rated)out.innerHTML='<p class="muted">Nothing rated in this mode yet.</p>'}
+function card(u){
+  const why=flags(u),d=document.createElement("div");d.className="utt"+(why.length?" flag":"");
+  d.innerHTML=`<div class="head"><span class="tag ${u.gender}">${u.gender==="M"?"male":"female"}</span><span class="tag">${u.corpus==="vctk"?"VCTK":"LibriTTS-R"} · speaker ${u.speaker}</span><span class="key">${u.key}</span></div>`+(why.length?`<div class="why">⚑ ${why.join("; ")}</div>`:"");
+  const g=document.createElement("div");g.className="grid";
+  for(const[k,label]of SYS){const c=u[k];if(!c)continue;const cell=document.createElement("div");cell.className="cell";cell.innerHTML=`<b>${label}</b><audio controls preload="none" src="audio/${c.id}.wav"></audio>`;
+    const sc=document.createElement("div");sc.className="sc";
+    for(let i=1;i<=5;i++){const b=document.createElement("button");b.textContent=i;if(ratings[c.id]===i)b.classList.add("on");if(first[c.id]===i&&ratings[c.id]!==i)b.classList.add("was");
+      b.onclick=async()=>{try{await fetch("/api/rate",{method:"POST",body:JSON.stringify({id:c.id,score:i,review:true})});if(!(c.id in first))first[c.id]=i;ratings[c.id]=i;draw()}catch(e){alert("Could not save: "+e)}};sc.append(b)}
+    const p=document.createElement("span");p.textContent=`predicted ${c.predicted.toFixed(2)}`+(c.id in ratings?"":" · not rated");sc.append(p);cell.append(sc);g.append(cell)}
+  d.append(g);return d}
+addEventListener("play",e=>{for(const a of document.querySelectorAll("audio"))if(a!==e.target)a.pause()},true);
+load();
+</script>

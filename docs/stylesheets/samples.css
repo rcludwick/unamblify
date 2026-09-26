@@ -1,0 +1,88 @@
+/* Home-page voice samples.
+ *
+ * Project-specific, so it lives here rather than in unamblify.css, which
+ * is a verbatim copy of astar's theme and should stay diffable against
+ * upstream. Colours come from that theme's tokens.
+ *
+ * Note: Material sets html { font-size: 125% }, so 1rem is 20px here.
+ * Sizes below are px where a real width matters (an audio element needs
+ * ~15rem before its scrubber becomes useless).
+ */
+
+.samples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 0.6rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.sample {
+  border: 1px solid var(--astar-hairline);
+  border-radius: 10px;
+  background: var(--astar-surface);
+  padding: 0.6rem 0.7rem;
+}
+
+.sample h3 {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sample .who {
+  margin: 0 0 0.45rem;
+  font-size: 0.65rem;
+  color: var(--astar-gray);
+}
+
+/* Label on the left, player filling the rest: three stages fit in the
+ * height one stacked player used to take. */
+.sample .row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.sample .tag {
+  flex: 0 0 3.2rem;
+  font-size: 0.6rem;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--astar-gray);
+}
+
+/* One flat accent per stage of the chain (see the rainbow policy in
+ * unamblify.css - no gradients anywhere but the header hairline). */
+.sample .tag.clean {
+  color: var(--astar-green);
+}
+.sample .tag.ambe {
+  color: var(--astar-red);
+}
+.sample .tag.out {
+  color: var(--astar-blue);
+}
+.sample .tag.natural {
+  color: var(--astar-teal);
+}
+
+.sample audio {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1.9rem;
+}
+
+.samples-note {
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--astar-gray);
+  margin: 0.35rem 0 0;
+}
+
+.samples-note a {
+  color: inherit;
+  text-decoration: underline;
+}
