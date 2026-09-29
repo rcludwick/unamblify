@@ -1,0 +1,37 @@
+[package]
+build = "build.rs"
+name = "unamblify-web"
+description = "Training dashboard: axum server, run supervisor, SSE, embedded UI."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+unamblify = { path = "../unamblify" }
+unamblify-audio = { path = "../unamblify-audio" }
+anyhow = "1"
+axum = { version = "0.8", features = ["json", "tokio", "http1"] }
+futures-core = "0.3"
+mime_guess = "2"
+nix = { version = "0.31", features = ["signal", "process"] }
+rust-embed = { version = "8", features = ["debug-embed"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha1 = "0.10"
+sysinfo = { version = "0.38", default-features = false, features = ["system"] }
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "process", "fs", "io-util", "sync", "time", "signal", "net"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+tower-http = { version = "0.6", features = ["auth", "validate-request"] }
+toml = "0.9"
+
+[dev-dependencies]
+http-body-util = "0.1"
+tempfile = "3"
+tower = { version = "0.5", features = ["util"] }
+
+[lints]
+workspace = true

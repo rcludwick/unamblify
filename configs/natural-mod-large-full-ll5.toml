@@ -1,0 +1,52 @@
+# The second naturalness experiment: everything the 2026-09-12 review
+# changed, on the re-split data.
+#
+#   [model] noise_mod    the noise path is modulated by the periodic
+#                        path's envelope (learned depth) and carries a
+#                        gain per 1 ms, so what it adds can be breath
+#                        rather than hiss and can form a plosive burst.
+#   [train] hnr_w        the harmonic-to-trough term, now a geometric
+#                        mean over bins so every harmonic counts once —
+#                        the arithmetic version was the 0–1 kHz band's
+#                        ratio and the first noise-head model satisfied
+#                        it by over-filling that band alone.
+#   [train] transient_w  the stop-consonant term: the 2–3.8 kHz envelope
+#                        at 1 ms resolution, level and slope, in dB.
+#   [data] mode_weights  the two AMBE modes take half the batches;
+#                        mixed-large was 84 % Codec 2 by example.
+#   shards mixed-large-v2  built after `prepare --resplit`: LibriTTS-R
+#                        dev/test readers hashed like VCTK's, which moved
+#                        8 228 utterances (most of the captured AMBE
+#                        hours) into train.
+#
+# Judge it on eval/hnr_abs (the first noise-head model: 2.6 dB against a
+# 0.75 floor), eval/plosive_* (both earlier models: −13 dB burst, −15 dB
+# closure, +11 ms rise) and scripts/mos.py (clean 4.05, codec 1.78, the
+# first noise-head model 2.08) — not on eval/lsd, which cannot see any
+# of this, and not on the eval/hnr mean alone, which read 0 last time
+# while nothing was right. LSD is not comparable with earlier runs
+# anyway: the training set changed.
+name = "natural-mod-large-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+noise_head = true
+noise_mod = true
+
+[data]
+source = "shards"
+shards = "mixed-large-v2"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]
+# YSF/DMR's capture is a third of D-STAR's; at 15 % it is still seen
+# ~10 times over in 40 000 steps × 16.
+mode_weights = [0.3, 0.15, 0.275, 0.275]
+
+[train]
+steps = 40000
+periodicity_w = 0.0
+# ~10 % of the total each at the start; read loss/hnr_l1 and
+# loss/transient against loss/total in the first few hundred steps.
+hnr_w = 0.1
+transient_w = 0.03

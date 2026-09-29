@@ -1,0 +1,56 @@
+[package]
+name = "unamblify-data"
+description = "Corpus preparation, ThumbDV and Codec 2 capture, sharding and verification for the unamblify pipeline."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "unamblify-data"
+path = "src/bin/unamblify-data.rs"
+
+[features]
+default = ["codec2", "perens"]
+# The pure-Rust Codec 2 vocoder (M17): `LGPL-2.1-only AND MIT`, compatible
+# with this crate's AGPL-3.0-only. Off, the codec2-* capture modes refuse
+# to start and nothing else changes. See docs/about/license.md.
+codec2 = ["dep:codec2"]
+# The vendored software D-STAR vocoder (Bruce Perens' `ham_digital_modes`,
+# reduced to the D-STAR path): `LGPL-3.0-or-later`, compatible with this
+# crate's AGPL-3.0-only. Off, `--codec perens` refuses to start and the
+# chip remains the only way to capture D-STAR.
+# See vendor/ham-digital-modes/VENDORED.md.
+perens = ["dep:ham-digital-modes-dstar"]
+
+[dependencies]
+unamblify = { path = "../unamblify" }
+unamblify-audio = { path = "../unamblify-audio" }
+ambe-thumbdv = { path = "../../vendor/ambe-thumbdv" }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+# Pinned exactly: vocoder::CODEC2_CRATE_VERSION is recorded in every
+# captured row and in canary.json, and a test checks it against this line.
+codec2 = { version = "=0.3.1", optional = true }
+# Vendored, not from crates.io; vocoder::PERENS_REV records the upstream
+# revision in every captured row and in canary.json, and a test checks it
+# against VENDORED.md.
+ham-digital-modes-dstar = { path = "../../vendor/ham-digital-modes", optional = true }
+ctrlc = "3"
+env_logger = "0.11"
+libc = "0.2"
+log = "0.4"
+num_cpus = "1"
+rayon = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

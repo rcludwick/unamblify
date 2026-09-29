@@ -1,0 +1,98 @@
+[
+ {
+  "gender": "M",
+  "corpus": "libritts_r",
+  "speaker": "5639",
+  "key": "libritts_r/test-clean/5639_40744_000018_000002"
+ },
+ {
+  "gender": "M",
+  "corpus": "libritts_r",
+  "speaker": "260",
+  "key": "libritts_r/test-clean/260_123286_000059_000002"
+ },
+ {
+  "gender": "M",
+  "corpus": "libritts_r",
+  "speaker": "7976",
+  "key": "libritts_r/dev-clean/7976_105575_000009_000001"
+ },
+ {
+  "gender": "M",
+  "corpus": "libritts_r",
+  "speaker": "1272",
+  "key": "libritts_r/dev-clean/1272_128104_000005_000009"
+ },
+ {
+  "gender": "M",
+  "corpus": "vctk",
+  "speaker": "p298",
+  "key": "vctk/p298_309_mic2"
+ },
+ {
+  "gender": "M",
+  "corpus": "vctk",
+  "speaker": "p284",
+  "key": "vctk/p284_349_mic2"
+ },
+ {
+  "gender": "M",
+  "corpus": "vctk",
+  "speaker": "p334",
+  "key": "vctk/p334_004_mic2"
+ },
+ {
+  "gender": "M",
+  "corpus": "vctk",
+  "speaker": "p278",
+  "key": "vctk/p278_024_mic2"
+ },
+ {
+  "gender": "F",
+  "corpus": "libritts_r",
+  "speaker": "6345",
+  "key": "libritts_r/dev-clean/6345_93306_000009_000002"
+ },
+ {
+  "gender": "F",
+  "corpus": "libritts_r",
+  "speaker": "84",
+  "key": "libritts_r/dev-clean/84_121123_000011_000004"
+ },
+ {
+  "gender": "F",
+  "corpus": "libritts_r",
+  "speaker": "7850",
+  "key": "libritts_r/dev-clean/7850_281318_000015_000000"
+ },
+ {
+  "gender": "F",
+  "corpus": "libritts_r",
+  "speaker": "1462",
+  "key": "libritts_r/dev-clean/1462_170142_000041_000001"
+ },
+ {
+  "gender": "F",
+  "corpus": "vctk",
+  "speaker": "p282",
+  "key": "vctk/p282_178_mic2"
+ },
+ {
+  "gender": "F",
+  "corpus": "vctk",
+  "speaker": "p228",
+  "key": "vctk/p228_256_mic2"
+ },
+ {
+  "gender": "F",
+  "corpus": "vctk",
+  "speaker": "p244",
+  "key": "vctk/p244_022_mic2"
+ },
+ {
+  "gender": "F",
+  "corpus": "vctk",
+  "speaker": "p323",
+  "key": "vctk/p323_371_mic2"
+ }
+]

@@ -1,0 +1,18 @@
+# The generalist on the large mixed set: every vocoder mode, told which
+# one it hears, 40 000 steps. mixed-large is ~6.7x the examples of
+# mixed-4mode — D-STAR and YSF/DMR whole, the two Codec 2 modes drawn
+# down to 30 000 utterances each so they cannot drown the AMBE modes.
+name = "generalist-large-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "mixed-large"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]
+
+[train]
+steps = 40000

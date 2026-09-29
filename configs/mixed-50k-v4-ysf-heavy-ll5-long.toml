@@ -1,0 +1,64 @@
+# The 200 k set again, run to convergence with a stronger naturalness
+# term. v4 was stopped early and traded naturalness for spectral match.
+#
+#   what v4 did      lsd 14.97 -> 11.74 and mel 9.12 -> 6.44, which read
+#                    as a strong run, while UTMOS22 said 1.79 -> 1.91:
+#                    worse than the 2.08 an earlier model reached. The
+#                    spectral metrics were measuring the easy part.
+#   [train] steps    80 000, not 40 000. Every loss term except hnr was
+#                    still falling in v4's last 2 000 steps: it was
+#                    stopped, not converged. 40 k steps over a set twice
+#                    the size gave ~1.9 epochs; this restores ~3.8.
+#   [train] hnr_w    0.3, up from 0.1. loss/hnr went flat from mid-run
+#                    and eval/hnr_abs stalled near 3.0, never reaching
+#                    the 2.6 an earlier noise-head model managed. The
+#                    naturalness term stopped competing once the
+#                    spectral terms began to pay.
+#   [train] transient_w
+#                    left at 0.03 on purpose. plosive_burst peaked at
+#                    step 6 000 and decayed after; changing it here
+#                    would confound that reading against v4.
+#   [ckpt]           every 2 000 steps, keep 40: the whole run survives.
+#                    v4 kept 5 at every 500, so only the last 2 500
+#                    steps lived and the checkpoints at the naturalness
+#                    peak (6 000-9 000) were deleted unrecoverably.
+#                    40 x 107 MB is about 4.3 GB.
+#   [eval]           every 2 000. At every 500 an 80 k run spends 8.9 h
+#                    in eval, more than it spends training.
+#
+# Judge on scripts/mos.py first, then eval/hnr_abs and eval/plosive_*.
+# Not on eval/lsd: it improved 3.2 dB in v4 while the ear-correlated
+# judge barely moved.
+
+name = "mixed-50k-v4-ysf-heavy-ll5-long"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+noise_head = true
+noise_mod = true
+
+[data]
+source = "shards"
+shards = "mixed-50k-v4"
+# Index order must match how the shard set was built
+# (--modes ysf-dmr,dstar,codec2-3200,codec2-1600).
+modes = ["ysf-dmr", "dstar", "codec2-3200", "codec2-1600"]
+# The requested 40/30/15/15 mix, as batch composition.
+mode_weights = [0.40, 0.30, 0.15, 0.15]
+
+[train]
+steps = 80000
+# Pinned, not inherited: configs/default.toml says cpu.
+device = "mps"
+periodicity_w = 0.0
+hnr_w = 0.3
+transient_w = 0.03
+
+[ckpt]
+every_steps = 2000
+keep = 40
+
+[eval]
+every_steps = 2000

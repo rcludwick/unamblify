@@ -1,0 +1,81 @@
+<!doctype html><meta charset="utf-8"><title>unamblify — listening test</title>
+<style>
+:root{color-scheme:dark}body{font:15px/1.5 system-ui;background:#101014;color:#ddd;margin:0;padding:24px 16px;max-width:860px;margin-inline:auto}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:28px 0 8px}.muted{color:#8a8a96}.card{background:#191920;border:1px solid #2a2a35;border-radius:10px;padding:20px;margin:16px 0}
+button{font:inherit;background:#23232d;color:#eee;border:1px solid #3a3a48;border-radius:8px;padding:10px 14px;cursor:pointer}button:hover{background:#2d2d3a}button.on{background:#2f6fed;border-color:#2f6fed}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px}.scale button{padding:14px 4px}.scale b{display:block;font-size:20px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.bar{height:6px;background:#23232d;border-radius:3px;overflow:hidden;margin:12px 0}.bar i{display:block;height:100%;background:#2f6fed}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}td,th{padding:6px 8px;border-bottom:1px solid #2a2a35;text-align:right}td:first-child,th:first-child{text-align:left}th{color:#8a8a96;font-weight:500}
+.pos{color:#5fd38d}.neg{color:#ff7b72}svg{background:#14141a;border-radius:8px;margin-top:8px}audio{width:100%;margin-top:10px}
+</style>
+<h1>Listening test</h1>
+<div class="muted">Blind: you are not told which system a clip came through. One mode per pass, so everything you compare is the same codec.</div>
+<div class="card"><div class="row"><span>Mode:</span><span id="modes"></span><span style="flex:1"></span><a href="review.html" style="color:#6ea8ff;margin-right:12px">Review my ratings</a><button id="showResults">Results</button></div></div>
+<div class="card" id="calib" hidden>
+  <b>Before you start: the ends of the scale</b>
+  <div class="muted" style="margin:6px 0 12px">Three labelled clips of one sentence in this mode, so a 1 and a 5 mean the same thing all the way through. The blind clips follow.</div>
+  <div id="calibRows"></div>
+  <div class="row" style="margin-top:14px"><button id="calibGo" class="on">Start rating</button><span class="muted">or press Enter</span></div>
+</div>
+<div class="card" id="rate">
+  <div class="row"><b id="pos"></b><span class="muted" id="left"></span></div><div class="bar"><i id="prog"></i></div>
+  <audio id="player" controls></audio>
+  <div class="row" style="margin-top:8px"><button id="refBtn" title="The original studio recording of this same sentence, so you rate against it and not against the clip before">▶ play the original recording (R)</button></div>
+  <audio id="ref" hidden></audio>
+  <div class="scale" id="scale"></div>
+  <div class="muted" style="margin-top:12px">Keys: 1–5 rate · space replay · ← back. Rate how natural it sounds, not how loud — every clip is level-matched. Stop any time; the order keeps genders and systems balanced, and results use whatever you have rated.</div>
+</div>
+<div class="card" id="results" hidden></div>
+<script>
+const LABELS=["Bad","Poor","Fair","Good","Excellent"], ANCH=["robotic, hard to listen to","clearly a codec","processed but natural enough","close to the recording","as good as the recording"], SYS={clean:"clean recording",codec:"raw codec (chip)",filter:"old filter model (v6 @72k)",restorer:"restorer + synthesiser"};
+let clips=[],ratings={},mode="ysf-dmr",order=[],at=0;
+const $=id=>document.getElementById(id), mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:NaN, f=(x,d=2)=>isNaN(x)?"–":x.toFixed(d);
+function rng(seed){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}}
+function buildOrder(){ // blocks of 8 = every (gender, system) once, so any prefix is balanced
+  const r=rng(mode==="dstar"?11:23), pool={};
+  for(const c of clips.filter(c=>c.mode===mode)){(pool[c.gender+c.system]??=[]).push(c)}
+  for(const k in pool) pool[k].sort(()=>r()-0.5);
+  order=[];for(let b=0;b<8;b++){const blk=Object.keys(pool).map(k=>pool[k][b]).filter(Boolean).sort(()=>r()-0.5);order.push(...blk)}
+  at=order.findIndex(c=>!(c.id in ratings)); if(at<0) at=order.length;
+}
+function calibrate(){
+  const done=order.some(c=>c.id in ratings); $("calib").hidden=done; $("rate").hidden=!done; if(done)return;
+  const key=order[0].key, pick=s=>clips.find(x=>x.key===key&&x.mode===mode&&x.system===s), rows=[["clean","5 — the original recording"],["codec","1 — the raw codec"],["filter","somewhere in the middle — an earlier post-filter"]];
+  $("calibRows").innerHTML=rows.map(([s,l])=>{const c=pick(s);return c?`<div style="margin:6px 0"><div class="muted">${l}</div><audio controls preload="none" src="audio/${c.id}.wav"></audio></div>`:""}).join("");
+}
+$("calibGo").onclick=()=>{$("calib").hidden=true;$("rate").hidden=false;show()};
+function show(){
+  const done=order.filter(c=>c.id in ratings).length; $("prog").style.width=(100*done/order.length)+"%";
+  $("left").textContent=`${done} of ${order.length} rated in this mode`;
+  if(at>=order.length){$("pos").textContent="This mode is done — open Results, or switch mode.";$("player").removeAttribute("src");$("scale").innerHTML="";return}
+  const c=order[at];$("pos").textContent=`Clip ${at+1}`;const rc=clips.find(x=>x.key===c.key&&x.mode===c.mode&&x.system==="clean");$("ref").src=rc?`audio/${rc.id}.wav`:"";$("player").src=`audio/${c.id}.wav`;$("player").play().catch(()=>{});
+  $("scale").innerHTML="";LABELS.forEach((l,i)=>{const b=document.createElement("button");b.innerHTML=`<b>${i+1}</b>${l}<small style="display:block;font-size:11px;color:#8a8a96;margin-top:2px">${ANCH[i]}</small>`;if(ratings[c.id]===i+1)b.className="on";b.onclick=()=>rate(i+1);$("scale").append(b)});
+}
+async function rate(s){const c=order[at];if(!c)return;ratings[c.id]=s;
+  try{await fetch("/api/rate",{method:"POST",body:JSON.stringify({id:c.id,score:s})})}catch(e){alert("Could not save: "+e)}
+  at++;show();if(!$("results").hidden)results()}
+function modes(){$("modes").innerHTML="";for(const[m,l]of[["dstar","D-STAR"],["ysf-dmr","YSF/DMR"]]){const b=document.createElement("button");b.textContent=l;if(m===mode)b.className="on";b.onclick=()=>{mode=m;modes();buildOrder();calibrate();show();if(!$("results").hidden)results()};$("modes").append(b)}}
+function spearman(x,y){const rk=a=>{const s=a.map((v,i)=>[v,i]).sort((p,q)=>p[0]-q[0]),r=[];for(let i=0;i<s.length;){let j=i;while(j<s.length&&s[j][0]===s[i][0])j++;for(let k=i;k<j;k++)r[s[k][1]]=(i+j-1)/2;i=j}return r};
+  const a=rk(x),b=rk(y),ma=mean(a),mb=mean(b);let n=0,da=0,db=0;for(let i=0;i<a.length;i++){n+=(a[i]-ma)*(b[i]-mb);da+=(a[i]-ma)**2;db+=(b[i]-mb)**2}return n/Math.sqrt(da*db)}
+function results(){
+  const rated=clips.filter(c=>c.mode===mode&&c.id in ratings);let h=`<h2 style="margin-top:0">Results — ${mode==="dstar"?"D-STAR":"YSF/DMR"} only (${rated.length} clips rated)</h2>`;
+  if(rated.length<8){$("results").innerHTML=h+'<div class="muted">Rate at least one full block of 8 to see a breakdown.</div>';return}
+  h+='<table><tr><th>System</th><th>Gender</th><th>n</th><th>You</th><th>Predicted</th><th>You − predicted</th></tr>';
+  for(const s of Object.keys(SYS))for(const g of["M","F"]){const r=rated.filter(c=>c.system===s&&c.gender===g);if(!r.length)continue;const y=mean(r.map(c=>ratings[c.id])),p=mean(r.map(c=>c.predicted)),d=y-p;
+    h+=`<tr><td>${SYS[s]}</td><td>${g==="M"?"male":"female"}</td><td>${r.length}</td><td>${f(y)}</td><td>${f(p)}</td><td class="${d>=0?"pos":"neg"}">${d>=0?"+":""}${f(d)}</td></tr>`}
+  h+='</table><h2>Male minus female, per system</h2><table><tr><th>System</th><th>You: M − F</th><th>Predicted: M − F</th></tr>';
+  for(const s of Object.keys(SYS)){const g=x=>rated.filter(c=>c.system===s&&c.gender===x),M=g("M"),F=g("F");if(!M.length||!F.length)continue;
+    const y=mean(M.map(c=>ratings[c.id]))-mean(F.map(c=>ratings[c.id])),p=mean(M.map(c=>c.predicted))-mean(F.map(c=>c.predicted));
+    h+=`<tr><td>${SYS[s]}</td><td class="${y>=0?"pos":"neg"}">${y>=0?"+":""}${f(y)}</td><td class="${p>=0?"pos":"neg"}">${p>=0?"+":""}${f(p)}</td></tr>`}
+  h+=`</table><h2>Your score against the predictor, clip by clip</h2><div class="muted">Rank correlation (Spearman): <b>${f(spearman(rated.map(c=>ratings[c.id]),rated.map(c=>c.predicted)))}</b> — 1 means it ranks clips the way you do. Blue = male, pink = female; a little jitter so points don't stack.</div>`;
+  const W=520,Hh=300,px=v=>50+(v-1)/4*(W-70),py=v=>Hh-40-(v-1)/4*(Hh-60),r=rng(5);let svg=`<svg width="${W}" height="${Hh}"><line x1="${px(1)}" y1="${py(1)}" x2="${px(5)}" y2="${py(5)}" stroke="#3a3a48" stroke-dasharray="4"/>`;
+  for(let v=1;v<=5;v++)svg+=`<text x="${px(v)}" y="${Hh-18}" fill="#8a8a96" font-size="11" text-anchor="middle">${v}</text><text x="30" y="${py(v)+4}" fill="#8a8a96" font-size="11" text-anchor="middle">${v}</text>`;
+  svg+=`<text x="${W/2}" y="${Hh-3}" fill="#8a8a96" font-size="11" text-anchor="middle">predicted MOS</text><text x="12" y="${Hh/2}" fill="#8a8a96" font-size="11" text-anchor="middle" transform="rotate(-90 12 ${Hh/2})">your score</text>`;
+  for(const c of rated)svg+=`<circle cx="${px(c.predicted)}" cy="${py(ratings[c.id]+(r()-0.5)*0.25)}" r="4" fill="${c.gender==="M"?"#4ea1ff":"#ff7ab6"}" fill-opacity=".8"><title>${SYS[c.system]} · ${c.gender} · ${c.key}</title></circle>`;
+  $("results").innerHTML=h+svg+"</svg>";
+}
+$("showResults").onclick=()=>{$("results").hidden=!$("results").hidden;if(!$("results").hidden)results()};
+$("refBtn").onclick=()=>{$("player").pause();$("ref").currentTime=0;$("ref").play()};$("ref").addEventListener("play",()=>$("player").pause());$("player").addEventListener("play",()=>$("ref").pause());
+addEventListener("keydown",e=>{if(e.key==="r"||e.key==="R"){$("refBtn").click();return}if(e.key>="1"&&e.key<="5"){if($("calib").hidden)rate(+e.key);}else if(e.key===" "){e.preventDefault();$("player").currentTime=0;$("player").play()}else if(e.key==="Enter"&&!$("calib").hidden){$("calibGo").click()}else if(e.key==="ArrowLeft"&&at>0){at--;show()}});
+(async()=>{clips=await(await fetch("clips.json")).json();for(const r of await(await fetch("/api/ratings")).json())ratings[r.id]=r.score;modes();buildOrder();calibrate();show()})();
+</script>

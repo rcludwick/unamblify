@@ -1,0 +1,11 @@
+# full profile, 20 AMBE frames (400 ms) of lookahead, on the D-STAR seed shards.
+name = "seed-dstar-full-ll20"
+
+[model]
+profile = "full"
+lookahead = 20
+
+[data]
+source = "shards"
+shards = "seed-dstar"
+mode = "dstar"

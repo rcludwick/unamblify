@@ -1,0 +1,90 @@
+# Voice corpora used by unamblify. Tab-separated. Lines starting with '#' are ignored.
+# Tiers: 0 = seed (small, start capture now), 1 = core, 2 = extended, 3 = noise (for mixing, not targets),
+# 4 = voice diversity (accents, more speakers, device re-recordings), 5 = other languages.
+# 6 = Common Voice (CC0) is form-gated and fetched by scripts/fetch-common-voice.sh, not from here.
+# Every row is usable commercially: CC BY 4.0, CC0, Apache-2.0, public domain, or CC BY-SA 4.0
+# (share-alike; those rows are latam_spanish and uk_ireland_dialects — see docs/research/data-sources.md).
+# size 0 = unknown at manifest time: the script accepts any size for that row and records it.
+# Columns: dataset  tier  archive_url  size_bytes  checksum(md5:...|sha256:...|-)  extract_dir
+# Checksums marked '-' are not published upstream; fetch-datasets.sh records the sha256 it
+# observed into $UNAMBLIFY_DATA/checksums/ so a later run (or another machine) can verify.
+# See docs/research/data-sources.md for licences, sample rates, and why each corpus is here.
+libritts_r	0	https://www.openslr.org/resources/141/dev_clean.tar.gz	1357352348	md5:2c1f5312914890634cc2d15783032ff3	libritts_r
+libritts_r	0	https://www.openslr.org/resources/141/test_clean.tar.gz	1294768623	md5:4d373d453eb96c0691e598061bbafab7	libritts_r
+voicebank_demand	0	https://datashare.ed.ac.uk/bitstream/handle/10283/2791/clean_trainset_28spk_wav.zip	2486057279	-	voicebank_demand
+voicebank_demand	0	https://datashare.ed.ac.uk/bitstream/handle/10283/2791/clean_testset_wav.zip	154332064	-	voicebank_demand
+voicebank_demand	0	https://datashare.ed.ac.uk/bitstream/handle/10283/2791/noisy_testset_wav.zip	170578854	-	voicebank_demand
+libritts_r	1	https://www.openslr.org/resources/141/train_clean_100.tar.gz	8129817509	md5:6df668d8f5f33e70876bfa33862ad02b	libritts_r
+libritts_r	1	https://www.openslr.org/resources/141/train_clean_360.tar.gz	28953983271	md5:382eb3e64394b3da6a559f864339b22c	libritts_r
+vctk	1	https://datashare.ed.ac.uk/bitstream/handle/10283/3443/VCTK-Corpus-0.92.zip	11747302977	-	vctk
+ljspeech	1	https://data.keithito.com/data/speech/LJSpeech-1.1.tar.bz2	2748572632	-	ljspeech
+hifi_tts	2	https://www.openslr.org/resources/109/hi_fi_tts_v0.tar.gz	41352291414	-	hifi_tts
+librispeech	2	https://www.openslr.org/resources/12/train-clean-100.tar.gz	6387309499	md5:2a93770f6d5c6c964bc36631d331a522	librispeech
+librispeech	2	https://www.openslr.org/resources/12/dev-clean.tar.gz	337926286	md5:42e2234ba48799c1f50f24a7926300a1	librispeech
+librispeech	2	https://www.openslr.org/resources/12/test-clean.tar.gz	346663984	md5:32fa31d27d2e1cad72775fee3f4849a9	librispeech
+demand	3	https://zenodo.org/records/1227121/files/DKITCHEN_16k.zip	110501049	md5:7ffbf52d7f4699f96927846103dc8788	demand
+demand	3	https://zenodo.org/records/1227121/files/DLIVING_16k.zip	80170627	md5:46741384d9e434a0bd8b3ec1830b6052	demand
+demand	3	https://zenodo.org/records/1227121/files/DWASHING_16k.zip	102343250	md5:7e5ee9437ce9409c5f9a779b6212a240	demand
+demand	3	https://zenodo.org/records/1227121/files/NFIELD_16k.zip	86536782	md5:a740046c6f4e174e16f5d568aaec5024	demand
+demand	3	https://zenodo.org/records/1227121/files/NPARK_16k.zip	86029332	md5:80f1385a34d7f1705758926b57f138ce	demand
+demand	3	https://zenodo.org/records/1227121/files/NRIVER_16k.zip	98689565	md5:54264db61d3fe073fb81f2e40e0d19b5	demand
+demand	3	https://zenodo.org/records/1227121/files/OHALLWAY_16k.zip	77941854	md5:fe918bbb0e63e73d09ba7f4843ef33f1	demand
+demand	3	https://zenodo.org/records/1227121/files/OMEETING_16k.zip	82703355	md5:62f7cfe7fe6d30b7d8a215fe37c2dfd2	demand
+demand	3	https://zenodo.org/records/1227121/files/OOFFICE_16k.zip	88995191	md5:7b61cc2d182d5a654cb9c3101ddd4041	demand
+demand	3	https://zenodo.org/records/1227121/files/PCAFETER_16k.zip	107431494	md5:99927d148128254141a9417d051510bb	demand
+demand	3	https://zenodo.org/records/1227121/files/PRESTO_16k.zip	111292815	md5:b98d2e6854eeebb397f29a8ad7457092	demand
+demand	3	https://zenodo.org/records/1227121/files/PSTATION_16k.zip	119441094	md5:d7448009f6c2aeb6ba570375df1750a3	demand
+demand	3	https://zenodo.org/records/1227121/files/SCAFE_48k.zip	325884186	md5:1a4ee387f1900f4b15ba219481c76556	demand
+demand	3	https://zenodo.org/records/1227121/files/SPSQUARE_16k.zip	110928528	md5:205d0e7b8fe74504a2f8d252fc414b9e	demand
+demand	3	https://zenodo.org/records/1227121/files/STRAFFIC_16k.zip	118572691	md5:2efa87262f272bbf9ba578088e81939c	demand
+demand	3	https://zenodo.org/records/1227121/files/TBUS_16k.zip	128916709	md5:706b11b0d8504f9f3b3f3211e91b3863	demand
+demand	3	https://zenodo.org/records/1227121/files/TCAR_16k.zip	130045975	md5:4d930012796bd298932245a26189f973	demand
+demand	3	https://zenodo.org/records/1227121/files/TMETRO_16k.zip	126589090	md5:95daf4df678e13b120e14211e6d89571	demand
+musan	3	https://www.openslr.org/resources/17/musan.tar.gz	11086114085	-	musan
+voicebank_demand	3	https://datashare.ed.ac.uk/bitstream/handle/10283/2791/noisy_trainset_28spk_wav.zip	2830205201	-	voicebank_demand
+libritts_r	4	https://www.openslr.org/resources/141/train_other_500.tar.gz	46843185428	md5:a37a8e9f4fe79d20601639bf23d1add8	libritts_r
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/irish_english_male.zip	164531638	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/midlands_english_female.zip	103085118	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/midlands_english_male.zip	166833961	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/northern_english_female.zip	314983063	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/northern_english_male.zip	817772034	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/scottish_english_female.zip	351443880	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/scottish_english_male.zip	620254118	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/southern_english_female.zip	1636701939	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/southern_english_male.zip	1700955740	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/welsh_english_female.zip	595683538	-	uk_ireland_dialects
+uk_ireland_dialects	4	https://www.openslr.org/resources/83/welsh_english_male.zip	757645790	-	uk_ireland_dialects
+dr_vctk	4	https://datashare.ed.ac.uk/download/DS_10283_3038.zip	1795193914	-	dr_vctk
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_awb_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_bdl_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_clb_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_jmk_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_ksp_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_rms_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+cmu_arctic	4	http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_slt_arctic-0.95-release.tar.bz2	0	-	cmu_arctic
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_italian_opus.tar.gz	4002080567	-	mls
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_portuguese_opus.tar.gz	2597205013	-	mls
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_polish_opus.tar.gz	1681717395	-	mls
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_spanish_opus.tar.gz	14661858849	-	mls
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_french_opus.tar.gz	17050067550	-	mls
+mls	5	https://dl.fbaipublicfiles.com/mls/mls_german_opus.tar.gz	31063916640	-	mls
+zeroth_korean	5	https://www.openslr.org/resources/40/zeroth_korean.tar.gz	10339720618	-	zeroth_korean
+aishell3	5	https://www.openslr.org/resources/93/data_aishell3.tgz	19057141777	-	aishell3
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/audio/train.tar.gz	1380572241	-	fleurs/en_us
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/es_419/audio/train.tar.gz	1439647524	-	fleurs/es_419
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/fr_fr/audio/train.tar.gz	1730529959	-	fleurs/fr_fr
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/de_de/audio/train.tar.gz	1614896315	-	fleurs/de_de
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/ja_jp/audio/train.tar.gz	1332680503	-	fleurs/ja_jp
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/ko_kr/audio/train.tar.gz	1420236944	-	fleurs/ko_kr
+fleurs	5	https://huggingface.co/datasets/google/fleurs/resolve/main/data/cmn_hans_cn/audio/train.tar.gz	1771862730	-	fleurs/cmn_hans_cn
+latam_spanish	5	https://www.openslr.org/resources/61/es_ar_female.zip	1262394798	-	latam_spanish/es_ar_female
+latam_spanish	5	https://www.openslr.org/resources/61/es_ar_male.zip	551574109	-	latam_spanish/es_ar_male
+latam_spanish	5	https://www.openslr.org/resources/71/es_cl_female.zip	585615697	-	latam_spanish/es_cl_female
+latam_spanish	5	https://www.openslr.org/resources/71/es_cl_male.zip	859750206	-	latam_spanish/es_cl_male
+latam_spanish	5	https://www.openslr.org/resources/72/es_co_female.zip	801960444	-	latam_spanish/es_co_female
+latam_spanish	5	https://www.openslr.org/resources/72/es_co_male.zip	810070088	-	latam_spanish/es_co_male
+latam_spanish	5	https://www.openslr.org/resources/73/es_pe_female.zip	913983951	-	latam_spanish/es_pe_female
+latam_spanish	5	https://www.openslr.org/resources/73/es_pe_male.zip	1026322863	-	latam_spanish/es_pe_male
+latam_spanish	5	https://www.openslr.org/resources/74/es_pr_female.zip	214181314	-	latam_spanish/es_pr_female
+latam_spanish	5	https://www.openslr.org/resources/75/es_ve_female.zip	517000277	-	latam_spanish/es_ve_female
+latam_spanish	5	https://www.openslr.org/resources/75/es_ve_male.zip	526316727	-	latam_spanish/es_ve_male

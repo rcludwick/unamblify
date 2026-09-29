@@ -1,0 +1,29 @@
+# The CI smoke run: 20 CPU steps of lite ll5 on half-second crops.
+# `unamblify smoke` uses synthetic data and does not read [data]; this
+# file exists so `unamblify train --config configs/smoke.toml` can run the
+# same shape against a real shard set.
+name = "smoke"
+
+[model]
+profile = "lite"
+lookahead = 5
+
+[data]
+source = "shards"
+shards = "seed-dstar"
+mode = "dstar"
+crop_s = 0.5
+
+[train]
+steps = 20
+batch = 4
+lr = 1e-3
+device = "cpu"
+
+[ckpt]
+every_steps = 10
+keep = 2
+
+[eval]
+every_steps = 10
+max_items = 2

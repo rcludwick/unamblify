@@ -1,0 +1,62 @@
+name: ci
+
+# Runs on the self-hosted IONOS box (rcludwick/gh-runners), whose runner is
+# attached to rcludwick/unamblify-private ONLY. A self-hosted runner on the
+# public repo would let any fork's pull request run code on that box, so:
+#
+#   THE PUBLIC REPOSITORY MUST NEVER HAVE A SELF-HOSTED RUNNER ATTACHED.
+#
+# This file rides into the public repo on every release, where
+# `[self-hosted, ionos]` would queue forever. Every job is therefore guarded
+# on `github.repository` and skips cleanly there. Same design as astar.
+#
+# The runners are rootless podman with no sudo: system packages (libudev-dev,
+# pkg-config, smartmontools) are baked into the runner image, not installed
+# here. Add a new one to gh-runners' runner/Containerfile.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  # No RUSTFLAGS here on purpose: an exported RUSTFLAGS replaces the
+  # per-target rustflags in the generated .cargo/config.toml (the libtorch
+  # rpath) and test binaries then fail to load libtorch. Warnings are
+  # denied by the clippy step instead.
+
+jobs:
+  rust:
+    # Private repo only — see the header. Skips cleanly in public.
+    if: github.repository == 'rcludwick/unamblify-private'
+    runs-on: [self-hosted, ionos]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: scripts/train-env.sh
+      # libtorch 2.13.0 (CPU wheel) for the train crate; writes the
+      # gitignored .cargo/config.toml with LIBTORCH and the rpath so every
+      # cargo step below just works. uv caches the wheel between runs.
+      - run: scripts/train-env.sh --gpu cpu
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      # The CI smoke run: 20 CPU steps on synthetic data through the binary.
+      - run: cargo run --locked -p unamblify-cli -- smoke
+      # The libtorch-free binary must keep building on its own.
+      - run: cargo build --locked --no-default-features -p unamblify-cli
+
+  docs:
+    # Private repo only — see the header. Skips cleanly in public.
+    if: github.repository == 'rcludwick/unamblify-private'
+    runs-on: [self-hosted, ionos]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: ./ci/build-docs.sh

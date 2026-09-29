@@ -1,0 +1,6 @@
+# Build logs from `make` (tectonic --keep-logs). The PDF itself is committed.
+*.log
+*.blg
+*.aux
+*.bbl
+*.out

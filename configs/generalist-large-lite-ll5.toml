@@ -1,0 +1,17 @@
+# The lite profile on the large mixed set — the mobile-ARM model, and
+# the capacity probe: if ~7x fewer parameters land near the full
+# profile's eval/lsd, model size is not what limits this task.
+name = "generalist-large-lite-ll5"
+
+[model]
+profile = "lite"
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "mixed-large"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]
+
+[train]
+steps = 40000

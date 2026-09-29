@@ -1,0 +1,21 @@
+# Evaluation clips: dev split, captured in all four modes.
+libritts_r/dev-clean/1272_128104_000005_000009
+libritts_r/dev-clean/1462_170142_000041_000001
+libritts_r/dev-clean/2803_154328_000080_000000
+libritts_r/dev-clean/5338_24615_000006_000001
+libritts_r/dev-clean/6345_93302_000036_000006
+libritts_r/dev-clean/7850_111771_000009_000001
+libritts_r/dev-clean/7976_105575_000011_000008
+libritts_r/dev-clean/84_121123_000062_000004
+vctk/p228_004_mic2
+vctk/p239_103_mic2
+vctk/p244_097_mic2
+vctk/p266_039_mic2
+vctk/p278_036_mic2
+vctk/p282_027_mic2
+vctk/p284_004_mic2
+vctk/p295_020_mic2
+vctk/p298_013_mic2
+vctk/p300_016_mic2
+vctk/p323_012_mic2
+vctk/p341_003_mic2

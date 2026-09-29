@@ -1,0 +1,24 @@
+# The D-STAR specialist: the generalist's weights (including its D-STAR
+# mode-embedding row) fine-tuned on D-STAR alone, at a tenth the
+# learning rate because it starts from a trained net. Point init_from at
+# whichever generalist run you are specialising.
+#
+# It draws from seed-dstar — the same shard set the from-scratch D-STAR
+# run used (best eval/lsd 11.02) — so the comparison isolates the one
+# thing that differs: where the weights came from.
+name = "specialist-dstar-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "seed-dstar"
+modes = ["dstar"]
+
+[train]
+steps = 6000
+lr = 2e-5
+init_from = "20260912-000009-generalist-full-ll5"

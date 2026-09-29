@@ -1,0 +1,14 @@
+# Proper nouns clippy's `doc_markdown` lint mistakes for code because they are
+# CamelCase. `..` keeps clippy's own default list.
+doc-valid-idents = [
+    "ThumbDV",
+    "DVstick",
+    "LibriTTS",
+    "LibriSpeech",
+    "VoiceBank",
+    "LJSpeech",
+    "VCTK",
+    "BrandMeister",
+    "RNNoise",
+    "..",
+]

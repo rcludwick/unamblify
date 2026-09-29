@@ -1,0 +1,167 @@
+# ============================================================================
+# Zensical configuration for the unamblify documentation site.
+#
+# Zensical is the static site generator from the Material for MkDocs team.
+# This is TOML, not MkDocs' mkdocs.yml. Theme and CSS are borrowed from astar
+# (rcludwick/astar) so the two sites look alike.
+#
+#   just docs         →  zensical serve   (http://localhost:8000, live reload)
+#   just docs-build   →  zensical build --clean --strict   (→ docs/.site)
+# ============================================================================
+
+[project]
+
+site_name = "unamblify"
+site_description = "A real-time neural post-filter that takes the robotic voice out of AMBE digital-voice audio."
+site_author = "Rob Ludwick"
+
+# GitHub Pages serves the project site from the /unamblify/ sub-path.
+site_url = "https://rcludwick.github.io/unamblify/"
+
+repo_url = "https://github.com/rcludwick/unamblify"
+repo_name = "rcludwick/unamblify"
+edit_uri = "edit/main/docs/"
+
+docs_dir = "docs"
+site_dir = "docs/.site"
+
+copyright = "Copyright &copy; 2026 Rob Ludwick — AGPL-3.0-only"
+
+extra_css = ["stylesheets/unamblify.css", "stylesheets/samples.css"]
+
+# Explicit navigation. Every path here must exist or `--strict` fails.
+# docs/notes/ holds gitignored "memories"; only its index.md is tracked, so
+# only the index is listed here. Notes are still reachable via search and
+# links when served locally.
+nav = [
+  { "Home" = "index.md" },
+  { "Docs map" = "map.md" },
+  { "Listen" = "demo/index.md" },
+  { "FAQ" = "faq.md" },
+  { "Theory" = [
+    "theory/index.md",
+    "theory/what-the-codec-destroys.md",
+    "theory/the-post-filter.md",
+    "theory/how-it-learns.md",
+    "theory/reading-the-numbers.md",
+    "theory/what-the-experiments-showed.md",
+    "theory/experiment-log.md",
+  ] },
+  { "Metrics" = [
+    "metrics/index.md",
+    "metrics/lsd.md",
+    "metrics/mel-l1.md",
+    "metrics/si-sdr.md",
+    "metrics/hnr.md",
+    "metrics/plosive.md",
+    "metrics/sibilant.md",
+    "metrics/mos.md",
+    "metrics/periodicity.md",
+    "metrics/babble.md",
+    "metrics/conditions.md",
+    "metrics/loss-terms.md",
+  ] },
+  { "Research" = [
+    "research/index.md",
+    "research/ambe-primer.md",
+    "research/data-sources.md",
+    "research/getting-the-data.md",
+    "research/corpus-inventory.md",
+    "research/hardware-throughput.md",
+    "research/prior-art.md",
+  ] },
+  { "Design" = [
+    "design/index.md",
+    "design/data-pipeline.md",
+    "design/training.md",
+    "design/realtime.md",
+    "design/reproducing.md",
+    "design/pipeline-runtime.md",
+    "design/demo.md",
+  ] },
+  { "Notes" = [
+    "notes/index.md",
+  ] },
+  { "About" = [
+    "about/whats-in-the-repo.md",
+    "about/license.md",
+  ] },
+]
+
+# ----------------------------------------------------------------------------
+# Theme — identical to astar's.
+# ----------------------------------------------------------------------------
+
+[project.theme]
+language = "en"
+
+# No Google Fonts request; unamblify.css selects the native Apple system stack.
+font = false
+
+logo = "images/logo.svg"
+favicon = "images/favicon.svg"
+
+features = [
+  "content.code.annotate",
+  "content.code.copy",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "toc.follow",
+]
+
+# Dark only. `custom` tells the theme to emit no colour rules and hands both
+# brand colours to docs/stylesheets/unamblify.css.
+[project.theme.palette]
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/rcludwick/unamblify"
+name = "unamblify on GitHub"
+
+# ----------------------------------------------------------------------------
+# Markdown extensions
+# ----------------------------------------------------------------------------
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+tables = {}
+toc = { permalink = true }
+
+"pymdownx.betterem" = {}
+"pymdownx.caret" = {}
+"pymdownx.details" = {}
+"pymdownx.inlinehilite" = {}
+"pymdownx.keys" = {}
+"pymdownx.magiclink" = {}
+"pymdownx.mark" = {}
+"pymdownx.smartsymbols" = {}
+"pymdownx.snippets" = {}
+"pymdownx.tilde" = {}
+"pymdownx.arithmatex" = { generic = true }
+
+"pymdownx.highlight" = { anchor_linenums = true, line_spans = "__span", pygments_lang_class = true }
+"pymdownx.tabbed" = { alternate_style = true, combine_header_slug = true }
+"pymdownx.tasklist" = { custom_checkbox = true }
+
+[project.markdown_extensions."pymdownx.emoji"]
+emoji_generator = "zensical.extensions.emoji.to_svg"
+emoji_index = "zensical.extensions.emoji.twemoji"
+
+[project.markdown_extensions."pymdownx.superfences"]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]

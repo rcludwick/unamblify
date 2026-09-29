@@ -1,0 +1,22 @@
+# One model over two vocoders: D-STAR (AMBE, from the chip) and Codec 2
+# 3200 (M17 voice, in software), full profile, 5 frames (100 ms) of
+# lookahead, told which mode it is hearing through the mode embedding.
+# The shard set holds both modes, drawn equally per split:
+#   unamblify shard --modes dstar,codec2-3200 --name mixed-dstar-codec2
+# The eval columns come per mode too (eval/lsd@dstar, eval/lsd@codec2-3200)
+# beside the mean over every clip. Set mode_embed = false for the blind
+# shared model — the other arm of the experiment.
+name = "mixed-dstar-codec2-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+
+[data]
+source = "shards"
+shards = "mixed-dstar-codec2"
+modes = ["dstar", "codec2-3200"]
+
+[train]
+device = "mps"

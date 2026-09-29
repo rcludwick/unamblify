@@ -1,0 +1,61 @@
+# The 200 k set plus the software D-STAR sibling, at v5's settings.
+#
+#   shards mixed-50k-v5  the same 4 modes and 50 k draw per capture set as
+#                        mixed-50k-v4, with one addition: dstar draws from
+#                        two capture sets, the chip and the vendored
+#                        software vocoder (`--kinds base,dstar+perens`).
+#                        D-STAR therefore contributes roughly twice the
+#                        utterances of any other mode. That is the point:
+#                        the model must repair D-STAR from either encoder,
+#                        and examples carry a mode index and not a kind
+#                        index, so it is never told which one it heard.
+#   [data] mode_weights  unchanged at 40/30/15/15. The weights set batch
+#                        composition, not how many utterances were packed,
+#                        so dstar's larger data share does not change how
+#                        often the model sees D-STAR — only how varied
+#                        those D-STAR examples are.
+#   [train] steps        80 000 and hnr_w 0.3, both carried from the run
+#                        that earned 2.12 MOS at step 76 000 (v4's best was
+#                        1.91 at 40 000 steps with hnr_w 0.1). Changing the
+#                        corpus and the schedule at once would confound the
+#                        comparison, so only the corpus moves here.
+#   [ckpt]               every 2 000, keep 40: the whole run survives. In
+#                        v5 the best checkpoint by MOS was 76 000, not the
+#                        final 80 000, and v4's keep=5 had deleted its own
+#                        best long before it could be scored.
+#
+# Judge on scripts/mos.py first (v5: all 2.12, ysf-dmr 2.49, dstar 2.39,
+# codec2-3200 2.12, codec2-1600 1.46), then eval/hnr_abs and
+# eval/plosive_*. Not on eval/lsd.
+
+name = "mixed-50k-v5-perens-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+noise_head = true
+noise_mod = true
+
+[data]
+source = "shards"
+shards = "mixed-50k-v5"
+# Index order must match how the shard set was built
+# (--modes ysf-dmr,dstar,codec2-3200,codec2-1600).
+modes = ["ysf-dmr", "dstar", "codec2-3200", "codec2-1600"]
+mode_weights = [0.40, 0.30, 0.15, 0.15]
+
+[train]
+steps = 80000
+# Pinned, not inherited: configs/default.toml says cpu.
+device = "mps"
+periodicity_w = 0.0
+hnr_w = 0.3
+transient_w = 0.03
+
+[ckpt]
+every_steps = 2000
+keep = 40
+
+[eval]
+every_steps = 2000

@@ -1,0 +1,43 @@
+# The naturalness experiment: the same generalist as
+# generalist-large-full-ll5, plus the two things that address the
+# residual robotic quality.
+#
+#   [model] noise_head   an aperiodic excitation path, so the net can put
+#                        energy back between the harmonics. Filtering
+#                        alone cannot: a filtered periodic signal stays
+#                        periodic, and the decoder's voiced bands are
+#                        exactly periodic.
+#   [train] hnr_w        a loss on how far the harmonics stand above the
+#                        troughs, against how far the target's do —
+#                        because every magnitude-matching term prefers
+#                        smooth and deterministic over correctly noisy.
+#
+# Measured before this run, on the eval clips: clean speech sits at
+# 18.7 dB harmonic-to-trough, a D-STAR decode at 28.9, and the
+# filter-only model at 24.5. Watch eval/hnr, which is that excess over
+# clean in dB — 0 is as natural as the reference.
+name = "natural-large-full-ll5"
+
+[model]
+profile = "full"
+lookahead = 5
+mode_embed = true
+noise_head = true
+
+[data]
+source = "shards"
+shards = "mixed-large"
+modes = ["dstar", "ysf-dmr", "codec2-3200", "codec2-1600"]
+
+[train]
+steps = 40000
+# The cepstral term stays a diagnostic (eval/periodicity,
+# loss/periodicity) and is deliberately NOT weighted: at a weight high
+# enough to matter, the model gamed it — the prominence error fell to
+# 0.01 while the harmonic-to-trough ratio got *worse*, 24.6 → 26.0 dB
+# (run 20260912-183551). Cepstral prominence can be moved by ripple at
+# neighbouring quefrencies, without filling a single trough.
+periodicity_w = 0.0
+# The direct measure instead, which names the bins that have to change.
+# The error starts around 5 dB, so 0.1 puts it at ~15 % of the total.
+hnr_w = 0.1
